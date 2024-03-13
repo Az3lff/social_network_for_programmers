@@ -2,11 +2,10 @@ package main
 
 import (
 	"social_network_for_programmers"
-	"social_network_for_programmers/internal/Messanger"
 	"social_network_for_programmers/internal/config"
-	"social_network_for_programmers/internal/service/authentication/models"
-	"social_network_for_programmers/internal/service/authentication"
-	"github.com/gin-gonic/gin"
+	v1 "social_network_for_programmers/internal/delivery/http/v1"
+	"social_network_for_programmers/internal/repository"
+	"social_network_for_programmers/internal/service"
 )
 
 func main() {
@@ -15,13 +14,12 @@ func main() {
 
 	}
 
-	router := gin.New()
-	messageHandler := Messanger.NewMessangerHandler()
-	messageHandler.Register(router)
-	authHandler := &authentication.AuthHandler{&authentication.AuthStorage{map[int]models.User{}}}
-	router.RouterGroup.POST("/register", authHandler.Register)
+	repos := repository.NewRepositories()
+	services := service.NewServices(repos)
+	handlers := v1.NewHandler(services)
+
 	srv := new(social_network_for_programmers.Server)
-	if err = srv.Run(cfg.HttpServer, router); err != nil {
+	if err = srv.Run(cfg.HttpServer, handlers.InitRoutes()); err != nil {
 
 	}
 }

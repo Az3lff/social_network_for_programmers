@@ -9,10 +9,10 @@ type Server struct {
 	httpServer *http.Server
 }
 
-func (s *Server) Run(cfg config.HttpServer, handlers http.Handler) error {
+func (s *Server) Run(cfg config.HttpServer, handler http.Handler) error {
 	s.httpServer = &http.Server{
 		Addr:           ":" + cfg.Port,
-		Handler:        handlers,
+		Handler:        handler,
 		MaxHeaderBytes: cfg.MaxHeaderBytes,
 		ReadTimeout:    cfg.ReadTimeout,
 		WriteTimeout:   cfg.WriteTimeout,
