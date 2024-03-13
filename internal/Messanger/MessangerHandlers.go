@@ -7,7 +7,8 @@ import (
 
 
 var users []User = []User{User{Id: 1, Name: "Kirill"}, User{Id: 2,Name: "Sergey"}}
-// var chats []Chat = []Chat{Chat{Id: 1, Profile:}}
+// var messages []Message = []Message{Content: "хуй", chatid: 1}
+var chats []Chat = []Chat{Chat{Id: 1, Profile: users[0], }}
 // var Users = map[int]string{1 : "Kirill", 2: "Sergey"}
 // var messages = map[int][]string{1: {"Hello peidor", "Hi"}, 2: {"yapidor", "tin ety"}}
 

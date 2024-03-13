@@ -14,7 +14,6 @@ type User struct{
 type Message struct {
 	Content  string
 	TimeSend time.Time 
-	ChatId int
 }
 
 type Chat struct{
