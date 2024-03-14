@@ -3,3 +3,5 @@ http_server:
   max_header_bytes: 1
   read_timeout: 10s
   write_timeout: 10s
+
+jwt_token: "Amenosubaruboshinomicoto: Ryugo"

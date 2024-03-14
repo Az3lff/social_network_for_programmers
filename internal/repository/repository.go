@@ -1,9 +1,13 @@
 package repository
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"social_network_for_programmers/internal/entity"
+)
 
 type Authentication interface {
-	CreateUser(c *gin.Context)
+	CreateUser(user *entity.User) error
+	CheckUser(login, password string) error
 }
 
 type Messenger interface {

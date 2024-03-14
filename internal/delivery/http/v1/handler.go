@@ -27,10 +27,16 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		}
 	}
 
-	authentification := router.Group("/auth")
+	signUp := router.Group("/signUp")
 	{
-		authentification.GET("/", nil)
-		authentification.POST("/", h.services.Authentication.CreateUser)
+		signUp.GET("/", h.services.Authentication.SignUpPage)
+		signUp.POST("/", h.services.Authentication.SignUp)
+	}
+
+	signIn := router.Group("/signIn")
+	{
+		signIn.GET("/", h.services.Authentication.SignInPage)
+		signIn.POST("/", h.services.Authentication.SignIn)
 	}
 
 	return router

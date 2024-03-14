@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	HttpServer `yaml:"http_server"`
+	JwtToken   string `yaml:"jwt_token"`
 }
 
 type HttpServer struct {
