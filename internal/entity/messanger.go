@@ -15,7 +15,7 @@ type Message struct {
 }
 
 type Chat struct {
-	Id       int
-	Profile  User
+	Id int
+	//Profile  User
 	Messages []Message
 }

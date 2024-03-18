@@ -1,6 +1,9 @@
 package main
 
 import (
+	"context"
+	"fmt"
+	"github.com/jackc/pgx/v5"
 	"social_network_for_programmers"
 	"social_network_for_programmers/internal/config"
 	v1 "social_network_for_programmers/internal/delivery/http/v1"
@@ -15,12 +18,18 @@ func main() {
 
 	}
 
+	connString := fmt.Sprintf("user=%s password=%s dbname=%s", cfg.PG.Username, cfg.PG.Password, cfg.PG.DbName)
+	postgresClient, err := pgx.Connect(context.Background(), connString)
+	if err != nil {
+
+	}
+
 	tokenManager, err := auth.NewManager(cfg.JwtToken)
 	if err != nil {
 
 	}
 
-	repos := repository.NewRepositories()
+	repos := repository.NewRepositories(postgresClient)
 	services := service.NewServices(repos, tokenManager)
 	handlers := v1.NewHandler(services)
 

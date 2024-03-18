@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	HttpServer `yaml:"http_server"`
+	PG         `yaml:"postgres"`
 	JwtToken   string `yaml:"jwt_token"`
 }
 
@@ -16,6 +17,12 @@ type HttpServer struct {
 	MaxHeaderBytes int           `yaml:"max_header_bytes"`
 	ReadTimeout    time.Duration `yaml:"read_timeout"`
 	WriteTimeout   time.Duration `yaml:"write_timeout"`
+}
+
+type PG struct {
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+	DbName   string `yaml:"db_name"`
 }
 
 func GetConfig() (*Config, error) {

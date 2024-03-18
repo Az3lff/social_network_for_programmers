@@ -3,20 +3,21 @@ package repository
 import (
 	"errors"
 	"fmt"
+	"github.com/jackc/pgx/v5"
 	"social_network_for_programmers/internal/entity"
 )
 
-var users []entity.User
+var users []entity.UsersSignUpInput
 
 type AuthenticationRepo struct {
-	users map[int]entity.User
+	db *pgx.Conn
 }
 
-func NewAuthenticationRepo() *AuthenticationRepo {
-	return &AuthenticationRepo{}
+func NewAuthenticationRepo(db *pgx.Conn) *AuthenticationRepo {
+	return &AuthenticationRepo{db}
 }
 
-func (a *AuthenticationRepo) CreateUser(user *entity.User) error {
+func (a *AuthenticationRepo) CreateUser(user *entity.UsersSignUpInput) error {
 	users = append(users, *user)
 	fmt.Println(users)
 	return nil

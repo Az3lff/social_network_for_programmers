@@ -4,4 +4,9 @@ http_server:
   read_timeout: 10s
   write_timeout: 10s
 
+postgres:
+  username: ""
+  password: ""
+  db_name: ""
+
 jwt_token: "Amenosubaruboshinomicoto: Ryugo"
