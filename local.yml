@@ -5,8 +5,8 @@ http_server:
   write_timeout: 10s
 
 postgres:
-  username: ""
-  password: ""
-  db_name: ""
+  username: "az3lff"
+  password: "SergeyAndKirill"
+  db_name: "social_network_for_programmers"
 
 jwt_token: "Amenosubaruboshinomicoto: Ryugo"

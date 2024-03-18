@@ -1,8 +1,12 @@
 package repository
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgxpool"
+)
 
 type MessengerRepo struct {
+	db *pgxpool.Conn
 }
 
 func NewMessengerRepo() *MessengerRepo {
