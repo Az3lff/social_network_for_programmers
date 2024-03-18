@@ -7,9 +7,9 @@ type Authentication interface {
 }
 
 type Messenger interface {
-	GetChatsHandler(c *gin.Context)
-	SendMessageHandler(c *gin.Context)
-	GetChatHandler(c *gin.Context)
+	GetChatsHandler()
+	SendMessageHandler()
+	GetChatHandler()
 }
 
 type Repositories struct {

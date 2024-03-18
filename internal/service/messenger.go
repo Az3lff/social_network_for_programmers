@@ -2,12 +2,9 @@ package service
 
 import (
 	"log"
-	"strconv"
 	"net/http"
-	// entity "social_network_for_programmers/internal/entity/messenger"
-	// entity "social_network_for_programmers/internal/entity/messenger"
+	"strconv"
 	"social_network_for_programmers/internal/repository"
-
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
@@ -63,6 +60,24 @@ func (m *MessengerService) SendMessageHandler(c *gin.Context) {
 
 }
 
+
+var chats = map[int][]map[string]string{1: /* []map[string]string */{{"Kirill" : "message"}, {"Arseniy": "message"}}}
+/* 
+	{
+		1: [
+			{Name: message},
+
+		]
+	}
+*/
+
+
 func (m *MessengerService) GetChatHandler(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil{
+		log.Println(err)
+		return
+	}
+	c.JSON(http.StatusOK, chats[id])
 
 }
