@@ -14,6 +14,7 @@ func main() {
 
 	}
 
+	
 	repos := repository.NewRepositories()
 	services := service.NewServices(repos)
 	handlers := v1.NewHandler(services)
