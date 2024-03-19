@@ -1,8 +1,12 @@
 package service
 
 import (
-	"github.com/gin-gonic/gin"
+	"log"
+	"net/http"
+	"strconv"
 	"social_network_for_programmers/internal/repository"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 type MessengerService struct {
@@ -14,34 +18,66 @@ func NewMessengerService(repo repository.Messenger) *MessengerService {
 }
 
 func (m *MessengerService) GetChatsHandler(c *gin.Context) {
-
+	c.Writer.Write([]byte(""))
 }
+
+var upgrader = &websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024, CheckOrigin: func(r *http.Request) bool { return true }}
+
+var rooms = make(map[int]map[*websocket.Conn]bool)
 
 func (m *MessengerService) SendMessageHandler(c *gin.Context) {
+	socket, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer socket.Close()
+	chatId, err := strconv.Atoi(c.Params.ByName("ChatId")) 
+	if err != nil{
+		log.Println(err)
+	}
+	_, ok := rooms[chatId]
+
+	if ok == false{
+		rooms[chatId] = make(map[*websocket.Conn]bool)
+	}
+	rooms[chatId][socket] = true
+	for {
+		messageType, p, err := socket.ReadMessage()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println(string(p))
+		for client := range rooms[chatId]{
+			if err := client.WriteMessage(messageType, p); err != nil {
+				log.Println(err)
+				return
+			}
+		}
+		
+	}
 
 }
+
+
+var chats = map[int][]map[string]string{1: /* []map[string]string */{{"Kirill" : "message"}, {"Arseniy": "message"}}}
+/* 
+	{
+		1: [
+			{Name: message},
+
+		]
+	}
+*/
+
 
 func (m *MessengerService) GetChatHandler(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil{
+		log.Println(err)
+		return
+	}
+	c.JSON(http.StatusOK, chats[id])
 
 }
-
-//var users []entity.ChatUser = []entity.ChatUser{entity.ChatUser{Id: 1, Name: "Kirill"}, entity.ChatUser{Id: 2, Name: "Sergey"}}
-//
-//// var messages []Message = []Message{Content: "хуй", chatid: 1}
-////var chats []entity.ChatUser = []entity.ChatUser{entity.ChatUser{Id: 1, Profile: users[0]}}
-//
-//// var Users = map[int]string{1 : "Kirill", 2: "Sergey"}
-//// var messages = map[int][]string{1: {"Hello peidor", "Hi"}, 2: {"yapidor", "tin ety"}}
-//
-////func (h *delivery) GetChatsHandler(c *gin.Context) {
-////	// c.Writer.Write([]byte(fmt.Sprintf("%s", Users)))
-////}
-////
-////func (h v1.Handler) GetChatHandler(c *gin.Context) {
-////	// chatid, _ := strconv.Atoi(c.Params.ByName("UserId"))
-////	// c.Writer.Write([]byte(messages[chatid][len(messages[chatid])-1]))
-////}
-////
-////func (h *handler) SendMessageHandler(c *gin.Context) {
-////
-////}
