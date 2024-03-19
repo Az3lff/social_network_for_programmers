@@ -16,6 +16,9 @@ func NewHandler(services *service.Services) *Handler {
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.Default()
 
+	//Добавить главную страницу, на которой будет переход на регистрацию/авторизацию
+	//router.GET("/soc_net_prog")
+
 	messenger := router.Group("/messages")
 	{
 		messenger.GET("/", h.services.Messenger.GetChatsHandler)

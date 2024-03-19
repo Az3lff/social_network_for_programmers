@@ -8,7 +8,7 @@ import (
 
 type Config struct {
 	HttpServer `yaml:"http_server"`
-	PG         `yaml:"postgres"`
+	PG         `yaml:"postgresQl"`
 	JwtToken   string `yaml:"jwt_token"`
 }
 
@@ -23,6 +23,8 @@ type PG struct {
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 	DbName   string `yaml:"db_name"`
+	Host     string `yaml:"host"`
+	Port     string `yaml:"port"`
 }
 
 func GetConfig() (*Config, error) {

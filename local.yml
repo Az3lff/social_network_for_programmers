@@ -4,9 +4,11 @@ http_server:
   read_timeout: 10s
   write_timeout: 10s
 
-postgres:
+postgresQl:
   username: "az3lff"
   password: "SergeyAndKirill"
   db_name: "social_network_for_programmers"
+  host: "127.0.0.1"
+  port: "5432"
 
 jwt_token: "Amenosubaruboshinomicoto: Ryugo"

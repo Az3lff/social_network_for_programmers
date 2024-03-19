@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
 	"social_network_for_programmers"
 	"social_network_for_programmers/internal/config"
@@ -11,6 +9,7 @@ import (
 	"social_network_for_programmers/internal/repository"
 	"social_network_for_programmers/internal/service"
 	"social_network_for_programmers/pkg/auth"
+	"social_network_for_programmers/pkg/database/postgres"
 )
 
 func main() {
@@ -19,25 +18,27 @@ func main() {
 		log.Fatalf("failed to get config: %s", err.Error())
 	}
 
-	connString := fmt.Sprintf("user=%s password=%s dbname=%s", cfg.PG.Username, cfg.PG.Password, cfg.PG.DbName)
-	postgresClient, err := pgxpool.New(context.Background(), connString)
-
+	ctx := context.Background()
+	pg := postgres.NewPostgres(ctx, cfg.PG)
+	client, err := pg.Connection()
 	if err != nil {
-		//log.Fatalf("failed to connection database: %s", err.Error())
-		log.Printf("failed to connection database: %s", err.Error())
+		log.Fatal(err.Error())
 	}
+	//if err := pg.MigrationUp(); err != nil && err.Error() != "no changes" {
+	//	log.Fatalf("Failed migrations up: %s", err.Error())
+	//}
 
 	tokenManager, err := auth.NewManager(cfg.JwtToken)
 	if err != nil {
 		log.Fatalf("failed to create tokenManager: %s", err.Error())
 	}
 
-	repos := repository.NewRepositories(postgresClient)
+	repos := repository.NewRepositories(client)
 	services := service.NewServices(repos, tokenManager)
-	handlers := v1.NewHandler(services)
+	handler := v1.NewHandler(services)
 
 	srv := new(social_network_for_programmers.Server)
-	if err = srv.Run(cfg.HttpServer, handlers.InitRoutes()); err != nil {
+	if err = srv.Run(cfg.HttpServer, handler.InitRoutes()); err != nil {
 		log.Fatalf("failed to run http server: %s", err.Error())
 	}
 }
