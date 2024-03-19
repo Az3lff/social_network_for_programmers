@@ -3,8 +3,9 @@ package service
 import (
 	"log"
 	"net/http"
-	"strconv"
 	"social_network_for_programmers/internal/repository"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
@@ -32,13 +33,13 @@ func (m *MessengerService) SendMessageHandler(c *gin.Context) {
 		return
 	}
 	defer socket.Close()
-	chatId, err := strconv.Atoi(c.Params.ByName("ChatId")) 
-	if err != nil{
+	chatId, err := strconv.Atoi(c.Params.ByName("ChatId"))
+	if err != nil {
 		log.Println(err)
 	}
 	_, ok := rooms[chatId]
 
-	if ok == false{
+	if !ok {
 		rooms[chatId] = make(map[*websocket.Conn]bool)
 	}
 	rooms[chatId][socket] = true
@@ -49,20 +50,20 @@ func (m *MessengerService) SendMessageHandler(c *gin.Context) {
 			return
 		}
 		log.Println(string(p))
-		for client := range rooms[chatId]{
+		for client := range rooms[chatId] {
 			if err := client.WriteMessage(messageType, p); err != nil {
 				log.Println(err)
 				return
 			}
 		}
-		
+
 	}
 
 }
 
+var chats = map[int][]map[string]string{1: /* []map[string]string */ {{"Kirill": "message"}, {"Arseniy": "message"}}}
 
-var chats = map[int][]map[string]string{1: /* []map[string]string */{{"Kirill" : "message"}, {"Arseniy": "message"}}}
-/* 
+/*
 	{
 		1: [
 			{Name: message},
@@ -71,13 +72,11 @@ var chats = map[int][]map[string]string{1: /* []map[string]string */{{"Kirill" :
 	}
 */
 
-
 func (m *MessengerService) GetChatHandler(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil{
+	if err != nil {
 		log.Println(err)
 		return
 	}
 	c.JSON(http.StatusOK, chats[id])
-
 }
