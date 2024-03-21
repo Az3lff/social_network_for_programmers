@@ -4,6 +4,7 @@ import (
 	//"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"social_network_for_programmers/internal/entity"
+	messengerModels "social_network_for_programmers/internal/entity/messenger"
 )
 
 type Authentication interface {
@@ -12,9 +13,10 @@ type Authentication interface {
 }
 
 type Messenger interface {
-	GetChatsHandler()
-	SendMessageHandler()
-	GetChatHandler()
+	SaveMessage(ChatId string, mess *messengerModels.Message) error
+	GetMessages(ChatId string, messages *[]messengerModels.Message) error
+	CreateChat(senderId string, recipientId string) (string, error)
+	GetAllChats(UserId string) ([]string, error)
 }
 
 type Repositories struct {
@@ -25,6 +27,6 @@ type Repositories struct {
 func NewRepositories(db *pgxpool.Pool) *Repositories {
 	return &Repositories{
 		NewAuthenticationRepo(db),
-		NewMessengerRepo(),
+		NewMessengerRepo(db),
 	}
 }

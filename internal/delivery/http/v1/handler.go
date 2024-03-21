@@ -22,18 +22,15 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	//Добавить главную страницу, на которой будет переход на регистрацию/авторизацию
 	//router.GET("/soc_net_prog")
 
-	messenger := router.Group("/messages")
+	messenger := router.Group("/messenger")
 	{
-		messenger.GET("/", h.services.Messenger.GetChatsHandler)
+		messenger.POST("/", h.services.Messenger.CreateChatHandler)
 		// messenger.GET("/page", func(c *gin.Context) {
 		// 	c.HTML(http.StatusOK, "test.html", gin.H{})
 		// })
-
-		messages := messenger.Group("/ws")
-		{
-			messages.GET("/chats/:id", h.services.Messenger.GetChatHandler)
-			messages.GET("/:ChatId", h.services.Messenger.SendMessageHandler)
-		}
+		messenger.GET("/chats/:UserId", h.services.Messenger.GetAllChatsHandler)
+		messenger.GET("/chat/:ChatId", h.services.Messenger.GetChatHandler)
+		messenger.GET("/ws/:ChatId", h.services.Messenger.GetConnChatHandler)
 	}
 
 	signUp := router.Group("/signUp")
@@ -47,6 +44,5 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		signIn.GET("/", h.services.Authentication.SignInPage)
 		signIn.POST("/", h.services.Authentication.SignIn)
 	}
-
 	return router
 }

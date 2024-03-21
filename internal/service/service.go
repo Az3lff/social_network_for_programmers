@@ -14,10 +14,12 @@ type Authentication interface {
 }
 
 type Messenger interface {
-	GetChatsHandler(c *gin.Context)
-	SendMessageHandler(c *gin.Context)
+	GetConnChatHandler(c *gin.Context)
 	GetChatHandler(c *gin.Context)
+	CreateChatHandler(c *gin.Context)
+	GetAllChatsHandler(c *gin.Context)
 }
+
 
 type Services struct {
 	Authentication Authentication

@@ -3,8 +3,8 @@ package service
 import (
 	"log"
 	"net/http"
+	entity "social_network_for_programmers/internal/entity/messenger"
 	"social_network_for_programmers/internal/repository"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -18,28 +18,37 @@ func NewMessengerService(repo repository.Messenger) *MessengerService {
 	return &MessengerService{repo}
 }
 
-func (m *MessengerService) GetChatsHandler(c *gin.Context) {
-	c.Writer.Write([]byte(""))
+func (m *MessengerService) CreateChatHandler(c *gin.Context) {
+	chatUsers := &entity.ChatUser{}
+	err := c.BindJSON(&chatUsers)
+	if err != nil{
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+	chat_id, err := m.repo.CreateChat(chatUsers.SenderId, chatUsers.RecipientId)
+	if err != nil{
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"chat_id":chat_id})
 }
 
 var upgrader = &websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024, CheckOrigin: func(r *http.Request) bool { return true }}
 
-var rooms = make(map[int]map[*websocket.Conn]bool)
+var rooms = make(map[string]map[*websocket.Conn]bool)
 
-func (m *MessengerService) SendMessageHandler(c *gin.Context) {
+func (m *MessengerService) GetConnChatHandler(c *gin.Context) {
 	socket, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
 	defer socket.Close()
-	chatId, err := strconv.Atoi(c.Params.ByName("ChatId"))
-	if err != nil {
-		log.Println(err)
-	}
-	_, ok := rooms[chatId]
-
-	if !ok {
+	chatId := c.Params.ByName("ChatId")
+	if _, ok := rooms[chatId];!ok {
 		rooms[chatId] = make(map[*websocket.Conn]bool)
 	}
 	rooms[chatId][socket] = true
@@ -47,36 +56,44 @@ func (m *MessengerService) SendMessageHandler(c *gin.Context) {
 		messageType, p, err := socket.ReadMessage()
 		if err != nil {
 			log.Println(err)
+			c.JSON(http.StatusBadRequest, gin.H{})
 			return
 		}
-		log.Println(string(p))
 		for client := range rooms[chatId] {
 			if err := client.WriteMessage(messageType, p); err != nil {
 				log.Println(err)
+				c.JSON(http.StatusBadRequest, gin.H{})
+				return
+			}
+			err = m.repo.SaveMessage(chatId, &entity.Message{Content: string(p)/* , Username: "" */})
+			if err != nil{
+				log.Println(err)
+				c.JSON(http.StatusBadRequest, gin.H{})
 				return
 			}
 		}
-
 	}
-
 }
 
-var chats = map[int][]map[string]string{1: /* []map[string]string */ {{"Kirill": "message"}, {"Arseniy": "message"}}}
-
-/*
-	{
-		1: [
-			{Name: message},
-
-		]
-	}
-*/
-
 func (m *MessengerService) GetChatHandler(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
+	chatId := c.Params.ByName("ChatId")
+	var messages []entity.Message
+	err := m.repo.GetMessages(chatId, &messages)
+	if err != nil{
 		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
-	c.JSON(http.StatusOK, chats[id])
+	c.JSON(http.StatusOK, gin.H{chatId:messages})
+}
+
+func (m *MessengerService) GetAllChatsHandler(c *gin.Context){
+	user_id := c.Params.ByName("UserId")
+	chats, err := m.repo.GetAllChats(user_id)
+	if err != nil{
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"chats_id":chats})
 }
