@@ -35,14 +35,14 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	signUp := router.Group("/signUp")
 	{
-		signUp.GET("/", h.services.Authentication.SignUpPage)
-		signUp.POST("/", h.services.Authentication.SignUp)
+		signUp.GET("/", h.services.Users.SignUpPage)
+		signUp.POST("/", h.services.Users.SignUp)
 	}
 
 	signIn := router.Group("/signIn")
 	{
-		signIn.GET("/", h.services.Authentication.SignInPage)
-		signIn.POST("/", h.services.Authentication.SignIn)
+		signIn.GET("/", h.services.Users.SignInPage)
+		signIn.POST("/", h.services.Users.SignIn)
 	}
 	return router
 }

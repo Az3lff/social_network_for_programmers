@@ -6,7 +6,7 @@ import (
 	"social_network_for_programmers/pkg/auth"
 )
 
-type Authentication interface {
+type Users interface {
 	SignUp(c *gin.Context)
 	SignUpPage(c *gin.Context)
 	SignInPage(c *gin.Context)
@@ -20,18 +20,17 @@ type Messenger interface {
 	GetAllChatsHandler(c *gin.Context)
 }
 
-
 type Services struct {
-	Authentication Authentication
-	Messenger      Messenger
+	Users     Users
+	Messenger Messenger
 }
 
 func NewServices(repos *repository.Repositories, tokenManager auth.TokenManager) *Services {
-	authenticationService := NewAuthenticationService(repos.Authentication, tokenManager)
+	usersService := NewUsersService(repos.Users, tokenManager)
 	messengerService := NewMessengerService(repos.Messenger)
 
 	return &Services{
-		authenticationService,
+		usersService,
 		messengerService,
 	}
 }

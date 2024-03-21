@@ -6,18 +6,18 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
-	"social_network_for_programmers/internal/entity"
+	"social_network_for_programmers/internal/entity/users"
 )
 
-type AuthenticationRepo struct {
+type UsersRepo struct {
 	db *pgxpool.Pool
 }
 
-func NewAuthenticationRepo(db *pgxpool.Pool) *AuthenticationRepo {
-	return &AuthenticationRepo{db}
+func NewUsersRepo(db *pgxpool.Pool) *UsersRepo {
+	return &UsersRepo{db}
 }
 
-func (a *AuthenticationRepo) CreateUser(user *entity.UsersSignUpInput) error {
+func (a *UsersRepo) CreateUser(user *users.UsersSignUpInput) error {
 	_, err := a.db.Exec(context.Background(), "CREATE TABLE IF NOT EXISTS users(id SERIAL PRIMARY KEY, login VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL)")
 	if err != nil {
 		fmt.Println(err.Error())
@@ -34,7 +34,7 @@ func (a *AuthenticationRepo) CreateUser(user *entity.UsersSignUpInput) error {
 	return nil
 }
 
-func (a *AuthenticationRepo) CheckUser(login, password string) error {
+func (a *UsersRepo) CheckUser(login, password string) error {
 
 	return errors.New("incorrect login or password")
 }

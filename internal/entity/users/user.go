@@ -1,4 +1,4 @@
-package entity
+package users
 
 type UsersSignUpInput struct {
 	Login    string `json:"login"`

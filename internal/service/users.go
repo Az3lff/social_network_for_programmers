@@ -6,27 +6,27 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"social_network_for_programmers/internal/entity"
+	"social_network_for_programmers/internal/entity/users"
 	"social_network_for_programmers/internal/repository"
 	"social_network_for_programmers/pkg/auth"
 	"social_network_for_programmers/pkg/validationUserAuth"
 )
 
-type AuthenticationService struct {
-	repo         repository.Authentication
+type UsersService struct {
+	repo         repository.Users
 	tokenManager auth.TokenManager
 }
 
-func NewAuthenticationService(repo repository.Authentication, tokenManager auth.TokenManager) *AuthenticationService {
-	return &AuthenticationService{repo, tokenManager}
+func NewUsersService(repo repository.Users, tokenManager auth.TokenManager) *UsersService {
+	return &UsersService{repo, tokenManager}
 }
 
-func (h *AuthenticationService) SignUpPage(c *gin.Context) {
+func (h *UsersService) SignUpPage(c *gin.Context) {
 
 }
 
-func (h *AuthenticationService) SignUp(c *gin.Context) {
-	user := new(entity.UsersSignUpInput)
+func (h *UsersService) SignUp(c *gin.Context) {
+	user := new(users.UsersSignUpInput)
 	if err := c.BindJSON(&user); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		c.Writer.Write([]byte("Failed to read a user data. Please try again later."))
@@ -54,12 +54,12 @@ func (h *AuthenticationService) SignUp(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-func (h *AuthenticationService) SignInPage(c *gin.Context) {
+func (h *UsersService) SignInPage(c *gin.Context) {
 
 }
 
-func (h *AuthenticationService) SignIn(c *gin.Context) {
-	user := entity.UsersSignInInput{}
+func (h *UsersService) SignIn(c *gin.Context) {
+	user := users.UsersSignInInput{}
 	if err := c.BindJSON(&user); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		c.Writer.Write([]byte("Failed to read a user data. Please try again later."))

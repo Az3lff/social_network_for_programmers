@@ -24,6 +24,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+
 	//if err := pg.MigrationUp(); err != nil && err.Error() != "no changes" {
 	//	log.Fatalf("Failed migrations up: %s", err.Error())
 	//}

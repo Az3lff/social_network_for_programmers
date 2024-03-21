@@ -3,12 +3,12 @@ package repository
 import (
 	//"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"social_network_for_programmers/internal/entity"
 	messengerModels "social_network_for_programmers/internal/entity/messenger"
+	"social_network_for_programmers/internal/entity/users"
 )
 
-type Authentication interface {
-	CreateUser(user *entity.UsersSignUpInput) error
+type Users interface {
+	CreateUser(user *users.UsersSignUpInput) error
 	CheckUser(login, password string) error
 }
 
@@ -20,13 +20,13 @@ type Messenger interface {
 }
 
 type Repositories struct {
-	Authentication Authentication
-	Messenger      Messenger
+	Users     Users
+	Messenger Messenger
 }
 
 func NewRepositories(db *pgxpool.Pool) *Repositories {
 	return &Repositories{
-		NewAuthenticationRepo(db),
+		NewUsersRepo(db),
 		NewMessengerRepo(db),
 	}
 }

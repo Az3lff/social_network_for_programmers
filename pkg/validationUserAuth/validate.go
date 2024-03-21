@@ -3,12 +3,12 @@ package validationUserAuth
 import (
 	"errors"
 	"net/mail"
-	"social_network_for_programmers/internal/entity"
+	"social_network_for_programmers/internal/entity/users"
 	"strings"
 	"unicode"
 )
 
-func ValidationUserSignUp(user *entity.UsersSignUpInput) error {
+func ValidationUserSignUp(user *users.UsersSignUpInput) error {
 	var errStr []string
 	if !loginIsValid(user.Login) {
 		errStr = append(errStr, "login="+user.Login)
