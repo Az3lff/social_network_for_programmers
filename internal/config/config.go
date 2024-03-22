@@ -9,7 +9,7 @@ import (
 type Config struct {
 	HttpServer `yaml:"http_server"`
 	PG         `yaml:"postgresQl"`
-	JwtToken   string `yaml:"jwt_token"`
+	SecretKey  string `yaml:"secret_key"`
 }
 
 type HttpServer struct {

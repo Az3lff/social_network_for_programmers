@@ -1,16 +1,16 @@
 package service
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
+	"social_network_for_programmers/internal/entity/users"
 	"social_network_for_programmers/internal/repository"
 	"social_network_for_programmers/pkg/auth"
 )
 
 type Users interface {
-	SignUp(c *gin.Context)
-	SignUpPage(c *gin.Context)
-	SignInPage(c *gin.Context)
-	SignIn(c *gin.Context)
+	SignUp(c context.Context, user *users.UserSignUp) error
+	SignIn(ctx context.Context, user *users.UserSignIn) (string, error)
 }
 
 type Messenger interface {

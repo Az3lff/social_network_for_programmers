@@ -29,7 +29,7 @@ func main() {
 	//	log.Fatalf("Failed migrations up: %s", err.Error())
 	//}
 
-	tokenManager, err := auth.NewManager(cfg.JwtToken)
+	tokenManager, err := auth.NewManager(cfg.SecretKey)
 	if err != nil {
 		log.Fatalf("failed to create tokenManager: %s", err.Error())
 	}

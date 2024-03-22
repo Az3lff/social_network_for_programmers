@@ -1,12 +1,12 @@
 package users
 
-type UsersSignUpInput struct {
+type UserSignUp struct {
 	Login    string `json:"login"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-type UsersSignInInput struct {
-	Login    string `json:"login"`
+type UserSignIn struct {
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }

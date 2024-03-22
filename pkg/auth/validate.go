@@ -1,4 +1,4 @@
-package validationUserAuth
+package auth
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"unicode"
 )
 
-func ValidationUserSignUp(user *users.UsersSignUpInput) error {
+func ValidationUserSignUp(user *users.UserSignUp) error {
 	var errStr []string
 	if !loginIsValid(user.Login) {
 		errStr = append(errStr, "login="+user.Login)
@@ -46,7 +46,7 @@ func emailIsValid(email string) bool {
 }
 
 func loginIsValid(login string) bool {
-	if len([]rune(login)) < 0 || len([]rune(login)) > 255 {
+	if len([]rune(login)) < 1 || len([]rune(login)) > 255 {
 		return false
 	}
 
@@ -60,7 +60,7 @@ func loginIsValid(login string) bool {
 }
 
 func passwordIsValid(password string) bool {
-	if len([]rune(password)) < 0 || len([]rune(password)) > 255 {
+	if len([]rune(password)) < 1 || len([]rune(password)) > 255 {
 		return false
 	}
 

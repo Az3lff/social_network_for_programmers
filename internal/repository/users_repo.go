@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"log"
 	"social_network_for_programmers/internal/entity/users"
 )
 
@@ -17,24 +17,29 @@ func NewUsersRepo(db *pgxpool.Pool) *UsersRepo {
 	return &UsersRepo{db}
 }
 
-func (a *UsersRepo) CreateUser(user *users.UsersSignUpInput) error {
-	_, err := a.db.Exec(context.Background(), "CREATE TABLE IF NOT EXISTS users(id SERIAL PRIMARY KEY, login VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL)")
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+func (u *UsersRepo) Create(ctx context.Context, user *users.UserSignUp) error {
+	q := `INSERT INTO users (login, email, hash_password) VALUES($1, $2, $3)`
 
-	row := a.db.QueryRow(context.Background(), "INSERT INTO users (login, email, password) VALUES ($1, $2, $3) RETURNING id", user.Login, user.Email, user.Password)
-	var id uint64
-	err = row.Scan(&id)
-
-	if err != nil {
-		log.Printf("failed to create user: %s", err.Error())
+	if _, err := u.db.Exec(ctx, q, user.Login, user.Email, user.Password); err != nil {
+		if pgErr, ok := err.(*pgconn.PgError); ok {
+			return errors.New(pgErr.Detail)
+		}
+		return err
 	}
 
 	return nil
 }
 
-func (a *UsersRepo) CheckUser(login, password string) error {
+func (u *UsersRepo) Find(ctx context.Context, user *users.UserSignIn) (userId string, err error) {
+	q := `SELECT user_id FROM users WHERE email=$1 AND hash_password=$2`
 
-	return errors.New("incorrect login or password")
+	if err = u.db.QueryRow(ctx, q, user.Email, user.Password).Scan(&userId); err != nil {
+		if pgErr, ok := err.(*pgconn.PgError); ok {
+			err = fmt.Errorf("sql error: %s, details: %s, where: %s", pgErr.Message, pgErr.Detail, pgErr.Where)
+			return
+		}
+		return
+	}
+
+	return
 }

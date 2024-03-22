@@ -1,7 +1,6 @@
 package v1
 
 import (
-	// "net/http"
 	"social_network_for_programmers/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -15,34 +14,10 @@ func NewHandler(services *service.Services) *Handler {
 	return &Handler{services}
 }
 
-func (h *Handler) InitRoutes() *gin.Engine {
-	router := gin.Default()
-	// router.LoadHTMLGlob("templates/*")
-
-	//Добавить главную страницу, на которой будет переход на регистрацию/авторизацию
-	//router.GET("/soc_net_prog")
-
-	messenger := router.Group("/messenger")
+func (h *Handler) Init(api *gin.RouterGroup) {
+	v1 := api.Group("/v1")
 	{
-		messenger.POST("/", h.services.Messenger.CreateChatHandler)
-		// messenger.GET("/page", func(c *gin.Context) {
-		// 	c.HTML(http.StatusOK, "test.html", gin.H{})
-		// })
-		messenger.GET("/chats/:UserId", h.services.Messenger.GetAllChatsHandler)
-		messenger.GET("/chat/:ChatId", h.services.Messenger.GetChatHandler)
-		messenger.GET("/ws/:ChatId", h.services.Messenger.GetConnChatHandler)
+		h.initUsersRoutes(v1)
+		h.initMessengerRoutes(v1)
 	}
-
-	signUp := router.Group("/signUp")
-	{
-		signUp.GET("/", h.services.Users.SignUpPage)
-		signUp.POST("/", h.services.Users.SignUp)
-	}
-
-	signIn := router.Group("/signIn")
-	{
-		signIn.GET("/", h.services.Users.SignInPage)
-		signIn.POST("/", h.services.Users.SignIn)
-	}
-	return router
 }

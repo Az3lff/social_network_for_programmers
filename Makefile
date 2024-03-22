@@ -3,4 +3,7 @@ run:
 	go run cmd/app/main.go
 
 migrateup:
-	migrate -path pkg/database/postgres/migrations -database "postgresql://postgres:marta2010@localhost:5432/socialNetwork" -verbose up
+	migrate -path pkg/database/postgres/migrations -database "postgresql://az3lff:SergeyAndKirill@localhost:5432/social_network_for_programmers" -verbose up
+
+migratedown:
+	migrate -path pkg/database/postgres/migrations -database "postgresql://az3lff:SergeyAndKirill@localhost:5432/social_network_for_programmers" -verbose up

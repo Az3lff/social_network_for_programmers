@@ -1,15 +1,15 @@
 package repository
 
 import (
-	//"github.com/gin-gonic/gin"
+	"context"
 	"github.com/jackc/pgx/v5/pgxpool"
 	messengerModels "social_network_for_programmers/internal/entity/messenger"
 	"social_network_for_programmers/internal/entity/users"
 )
 
 type Users interface {
-	CreateUser(user *users.UsersSignUpInput) error
-	CheckUser(login, password string) error
+	Create(ctx context.Context, user *users.UserSignUp) error
+	Find(ctx context.Context, user *users.UserSignIn) (id string, err error)
 }
 
 type Messenger interface {

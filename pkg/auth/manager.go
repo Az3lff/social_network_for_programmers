@@ -22,9 +22,9 @@ func NewManager(key string) (*Manager, error) {
 	return &Manager{key}, nil
 }
 
-func (m *Manager) NewJwtToken(login string) (string, error) {
+func (m *Manager) NewJwtToken(userId string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": login,
+		"sub": userId,
 		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	})
 
