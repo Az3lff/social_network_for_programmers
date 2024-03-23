@@ -1,7 +1,7 @@
 package responses
 
-type ErrorBadRequest struct {
-	Err string `json:"error"`
+type ErrorResponse struct {
+	Message string `json:"message"`
 }
 
 type LoginResponse struct {

@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"social_network_for_programmers/internal/entity/users"
 	"social_network_for_programmers/internal/repository"
-	"social_network_for_programmers/pkg/auth"
+	"social_network_for_programmers/pkg/auth/tokenutil"
 )
 
 type Users interface {
@@ -25,7 +25,7 @@ type Services struct {
 	Messenger Messenger
 }
 
-func NewServices(repos *repository.Repositories, tokenManager auth.TokenManager) *Services {
+func NewServices(repos *repository.Repositories, tokenManager tokenutil.TokenManager) *Services {
 	usersService := NewUsersService(repos.Users, tokenManager)
 	messengerService := NewMessengerService(repos.Messenger)
 

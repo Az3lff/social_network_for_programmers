@@ -8,15 +8,15 @@ import (
 	"github.com/jackc/pgx/v5"
 	"social_network_for_programmers/internal/entity/users"
 	"social_network_for_programmers/internal/repository"
-	"social_network_for_programmers/pkg/auth"
+	"social_network_for_programmers/pkg/auth/tokenutil"
 )
 
 type UsersService struct {
 	repo         repository.Users
-	tokenManager auth.TokenManager
+	tokenManager tokenutil.TokenManager
 }
 
-func NewUsersService(repo repository.Users, tokenManager auth.TokenManager) *UsersService {
+func NewUsersService(repo repository.Users, tokenManager tokenutil.TokenManager) *UsersService {
 	return &UsersService{repo, tokenManager}
 }
 
