@@ -8,7 +8,7 @@ import (
 	"social_network_for_programmers/internal/delivery/http"
 	"social_network_for_programmers/internal/repository"
 	"social_network_for_programmers/internal/service"
-	"social_network_for_programmers/pkg/auth/tokenutil"
+	"social_network_for_programmers/pkg/auth"
 	"social_network_for_programmers/pkg/database/postgres"
 )
 
@@ -25,7 +25,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	tokenManager, err := tokenutil.NewManager(cfg.SecretKey)
+	tokenManager, err := auth.NewManager(cfg.SecretKey)
 	if err != nil {
 		log.Fatalf("failed to create tokenManager: %s", err.Error())
 	}

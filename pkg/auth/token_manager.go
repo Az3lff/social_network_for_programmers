@@ -1,4 +1,4 @@
-package tokenutil
+package auth
 
 import (
 	"errors"

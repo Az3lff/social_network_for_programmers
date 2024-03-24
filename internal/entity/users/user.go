@@ -10,3 +10,10 @@ type UserSignIn struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+type UserRepo struct {
+	UUID         string
+	Login        string
+	Email        string
+	HashPassword string
+}

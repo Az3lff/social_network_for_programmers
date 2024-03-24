@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 	"social_network_for_programmers/internal/entity/users"
-	"social_network_for_programmers/pkg/auth"
+	"social_network_for_programmers/pkg/auth/utils"
 	"social_network_for_programmers/pkg/responses"
 )
 
@@ -29,7 +29,7 @@ func (h *Handler) userSignUp(c *gin.Context) {
 		return
 	}
 
-	if err := auth.ValidationUserSignUp(user); err != nil {
+	if err := utils.ValidationUserSignUp(user); err != nil {
 		errResp := fmt.Sprintf("%s, please try again", err.Error())
 		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: errResp})
 		return

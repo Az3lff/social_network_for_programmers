@@ -9,7 +9,7 @@ import (
 
 type Users interface {
 	Create(ctx context.Context, user *users.UserSignUp) error
-	Find(ctx context.Context, user *users.UserSignIn) (id string, err error)
+	GetByEmail(ctx context.Context, email string) (user *users.UserRepo, err error)
 }
 
 type Messenger interface {
