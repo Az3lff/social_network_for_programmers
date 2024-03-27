@@ -12,8 +12,8 @@ postgresQl:
   port: "5432"
 
 auth_email:
-  username: "az3lff@gmail.com"
-  password: "ibuh nrfk qoui mxvk"
+  username: ""
+  password: ""
   host: "smtp.gmail.com"
   port: "587"
 
