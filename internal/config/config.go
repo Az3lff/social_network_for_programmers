@@ -9,6 +9,7 @@ import (
 type Config struct {
 	HttpServer `yaml:"http_server"`
 	PG         `yaml:"postgresQl"`
+	AuthEmail  `yaml:"auth_email"`
 	SecretKey  string `yaml:"secret_key"`
 }
 
@@ -23,6 +24,13 @@ type PG struct {
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 	DbName   string `yaml:"db_name"`
+	Host     string `yaml:"host"`
+	Port     string `yaml:"port"`
+}
+
+type AuthEmail struct {
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
 	Host     string `yaml:"host"`
 	Port     string `yaml:"port"`
 }

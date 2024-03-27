@@ -10,13 +10,13 @@ import (
 
 func ValidationUserSignUp(user *users.UserSignUp) error {
 	var errStr []string
-	if !loginIsValid(user.Login) {
+	if !LoginIsValid(user.Login) {
 		errStr = append(errStr, "login="+user.Login)
 	}
-	if !emailIsValid(user.Email) {
-		errStr = append(errStr, "email="+user.Email)
+	if !EmailIsValid(user.Email) {
+		errStr = append(errStr, "emails="+user.Email)
 	}
-	if !passwordIsValid(user.Password) {
+	if !PasswordIsValid(user.Password) {
 		errStr = append(errStr, "password=*hidden*")
 	}
 
@@ -27,7 +27,7 @@ func ValidationUserSignUp(user *users.UserSignUp) error {
 	return nil
 }
 
-func emailIsValid(email string) bool {
+func EmailIsValid(email string) bool {
 	if len([]rune(email)) < 5 || len([]rune(email)) > 255 {
 		return false
 	}
@@ -45,7 +45,7 @@ func emailIsValid(email string) bool {
 	return true
 }
 
-func loginIsValid(login string) bool {
+func LoginIsValid(login string) bool {
 	if len([]rune(login)) < 1 || len([]rune(login)) > 255 {
 		return false
 	}
@@ -59,7 +59,7 @@ func loginIsValid(login string) bool {
 	return true
 }
 
-func passwordIsValid(password string) bool {
+func PasswordIsValid(password string) bool {
 	if len([]rune(password)) < 1 || len([]rune(password)) > 255 {
 		return false
 	}

@@ -17,3 +17,7 @@ type UserRepo struct {
 	Email        string
 	HashPassword string
 }
+
+type UserRestore struct {
+	Email string `json:"email"`
+}

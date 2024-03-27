@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"social_network_for_programmers"
 	"social_network_for_programmers/internal/config"
@@ -17,9 +18,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to get config: %s", err.Error())
 	}
+	fmt.Println(cfg)
 
 	ctx := context.Background()
-	pg := postgres.NewPostgres(ctx, cfg.PG)
+	pg := postgres.NewPostgres(ctx, &cfg.PG)
 	client, err := pg.Connection()
 	if err != nil {
 		log.Fatal(err.Error())

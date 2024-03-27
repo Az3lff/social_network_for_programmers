@@ -17,15 +17,15 @@ func NewHandler(services *service.Services) *Handler {
 	}
 }
 
-// http://localhost:8080/api/v1/...
+// http://localhost:8080/snp/v1/...
 
 func (h *Handler) InitRoutes(cfg *config.Config) *gin.Engine {
 	router := gin.Default()
 
-	handlerV1 := v1.NewHandler(h.services)
-	api := router.Group("/api")
+	handlerV1 := v1.NewHandler(h.services, cfg)
+	api := router.Group("/snp")
 	{
-		handlerV1.Init(api, cfg.SecretKey)
+		handlerV1.Init(api)
 	}
 
 	return router

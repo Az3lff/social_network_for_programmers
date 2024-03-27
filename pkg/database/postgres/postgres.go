@@ -7,18 +7,18 @@ import (
 	"social_network_for_programmers/internal/config"
 	// "github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
-    _ "github.com/golang-migrate/migrate/v4/source/github"
+	_ "github.com/golang-migrate/migrate/v4/source/github"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Postgres struct {
 	client *pgxpool.Pool
-	pgCfg  config.PG
+	pgCfg  *config.PG
 	ctx    context.Context
 	url    string
 }
 
-func NewPostgres(ctx context.Context, cfg config.PG) *Postgres {
+func NewPostgres(ctx context.Context, cfg *config.PG) *Postgres {
 	return &Postgres{
 		ctx:   ctx,
 		pgCfg: cfg,

@@ -7,9 +7,10 @@ import (
 	"social_network_for_programmers/internal/entity/users"
 )
 
-type Users interface {
+type Auth interface {
 	Create(ctx context.Context, user *users.UserSignUp) error
 	GetByEmail(ctx context.Context, email string) (user *users.UserRepo, err error)
+	FindByEmail(ctx context.Context, email string) error
 }
 
 type Messenger interface {
@@ -20,13 +21,13 @@ type Messenger interface {
 }
 
 type Repositories struct {
-	Users     Users
+	Auth      Auth
 	Messenger Messenger
 }
 
 func NewRepositories(db *pgxpool.Pool) *Repositories {
 	return &Repositories{
-		NewUsersRepo(db),
+		NewAuthRepo(db),
 		NewMessengerRepo(db),
 	}
 }
