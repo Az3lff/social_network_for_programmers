@@ -3,8 +3,8 @@ package auth
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"social_network_for_programmers/internal/entity/responses"
 	"social_network_for_programmers/pkg/auth/utils/tokenutil"
-	"social_network_for_programmers/pkg/responses"
 	"strings"
 )
 

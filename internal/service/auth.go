@@ -4,21 +4,24 @@ import (
 	"context"
 	"errors"
 	"github.com/jackc/pgx/v5"
+	"github.com/redis/go-redis/v9"
 	"social_network_for_programmers/internal/config"
 	"social_network_for_programmers/internal/entity/emails"
 	"social_network_for_programmers/internal/entity/users"
 	"social_network_for_programmers/internal/repository"
 	"social_network_for_programmers/pkg/auth"
 	"social_network_for_programmers/pkg/auth/utils"
+	"time"
 )
 
 type AuthService struct {
 	repo         repository.Auth
 	tokenManager auth.TokenManager
+	cache        *redis.Client
 }
 
-func NewAuthService(repo repository.Auth, tokenManager auth.TokenManager) *AuthService {
-	return &AuthService{repo, tokenManager}
+func NewAuthService(repo repository.Auth, tokenManager auth.TokenManager, cache *redis.Client) *AuthService {
+	return &AuthService{repo, tokenManager, cache}
 }
 
 func (a *AuthService) SignUp(ctx context.Context, user *users.UserSignUp) error {
@@ -63,6 +66,7 @@ func (a *AuthService) RestoreAccount(ctx context.Context, email string, ath *con
 	}
 
 	code := utils.GenerateRestoreCode()
+	a.cache.Set(ctx, email, code, 3*time.Minute)
 
 	content := "Subject:Restore account code\n" + code
 
@@ -76,6 +80,21 @@ func (a *AuthService) RestoreAccount(ctx context.Context, email string, ath *con
 	if err := utils.SendMessageEmail(&s); err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (a *AuthService) CheckRestoreCode(ctx context.Context, req *users.RestoreAccessRequest) error {
+	codeInCache, err := a.cache.Get(ctx, req.Email).Result()
+	if err != nil {
+		return err
+	}
+
+	if !utils.CompareRestoreCode(req.Code, codeInCache) {
+		return errors.New("code is invalid")
+	}
+
+	a.cache.Del(ctx, req.Email)
 
 	return nil
 }

@@ -9,6 +9,7 @@ import (
 type Config struct {
 	HttpServer `yaml:"http_server"`
 	PG         `yaml:"postgresQl"`
+	RS         `yaml:"redis"`
 	AuthEmail  `yaml:"auth_email"`
 	SecretKey  string `yaml:"secret_key"`
 }
@@ -26,6 +27,12 @@ type PG struct {
 	DbName   string `yaml:"db_name"`
 	Host     string `yaml:"host"`
 	Port     string `yaml:"port"`
+}
+
+type RS struct {
+	Addr     string `yaml:"addr"`
+	Password string `yaml:"password"`
+	Db       int    `yaml:"db"`
 }
 
 type AuthEmail struct {

@@ -7,3 +7,7 @@ type ErrorResponse struct {
 type LoginResponse struct {
 	AccessToken string `json:"access_token"`
 }
+
+type InfoResponse struct {
+	Message string `yaml:"message"`
+}

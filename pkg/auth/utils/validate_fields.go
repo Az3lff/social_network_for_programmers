@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/mail"
 	"social_network_for_programmers/internal/entity/users"
+	"strconv"
 	"strings"
 	"unicode"
 )
@@ -21,7 +22,7 @@ func ValidationUserSignUp(user *users.UserSignUp) error {
 	}
 
 	if len(errStr) > 0 {
-		return errors.New(strings.Join(errStr, ", ") + " is invalid")
+		return errors.New(strings.Join(errStr, ", ") + " is incorrect")
 	}
 
 	return nil
@@ -68,6 +69,19 @@ func PasswordIsValid(password string) bool {
 		if char > unicode.MaxASCII {
 			return false
 		}
+	}
+
+	return true
+}
+
+func CodeIsValid(code string) bool {
+	if len([]rune(code)) != 6 {
+		return false
+	}
+
+	_, err := strconv.Atoi(code)
+	if err != nil {
+		return false
 	}
 
 	return true

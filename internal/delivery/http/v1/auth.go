@@ -5,20 +5,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"social_network_for_programmers/internal/entity/responses"
 	"social_network_for_programmers/internal/entity/users"
 	"social_network_for_programmers/pkg/auth/utils"
-	"social_network_for_programmers/pkg/responses"
 )
 
 func (h *Handler) initAuthRoutes(api *gin.RouterGroup) {
-	user := api.Group("/auth")
+	auth := api.Group("/auth")
 	{
-		user.POST("/sign-up", h.userSignUp)
-		user.POST("/sign-in", h.userSignIn)
-		user.POST("/restore-access", h.userRestoreAccount)
-
-		user.GET("/sign-up")
-		user.GET("/sign-in")
+		auth.POST("/sign-up", h.userSignUp)
+		auth.POST("/sign-in", h.userSignIn)
+		auth.POST("/restore-access", h.userRestoreAccount)
+		auth.POST("/check-restore-code", h.checkRestoreCode)
 	}
 }
 
@@ -38,7 +36,7 @@ func (h *Handler) userSignUp(c *gin.Context) {
 
 	if err := h.services.Auth.SignUp(c.Request.Context(), user); err != nil {
 		errResp := fmt.Sprintf("failed to create user: %s", err.Error())
-		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: errResp})
+		c.JSON(http.StatusInternalServerError, responses.ErrorResponse{Message: errResp})
 		log.Println(errResp)
 		return
 	}
@@ -61,7 +59,7 @@ func (h *Handler) userSignIn(c *gin.Context) {
 
 	token, err := h.services.Auth.SignIn(c.Request.Context(), user)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: err.Error()})
+		c.JSON(http.StatusInternalServerError, responses.ErrorResponse{Message: err.Error()})
 		log.Println(err.Error())
 		return
 	}
@@ -77,14 +75,35 @@ func (h *Handler) userRestoreAccount(c *gin.Context) {
 	}
 
 	if !utils.EmailIsValid(user.Email) {
-		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "invalid email"})
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "incorrect email"})
 		return
 	}
 
 	if err := h.services.Auth.RestoreAccount(c.Request.Context(), user.Email, &h.cfg.AuthEmail); err != nil {
-		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: err.Error()})
+		c.JSON(http.StatusInternalServerError, responses.ErrorResponse{Message: err.Error()})
 		return
 	}
 
 	c.Status(http.StatusOK)
+}
+
+func (h *Handler) checkRestoreCode(c *gin.Context) {
+	req := new(users.RestoreAccessRequest)
+	if err := c.BindJSON(req); err != nil {
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "failed to read a user data, please try again"})
+		return
+	}
+	fmt.Println(req.Code)
+
+	if !utils.CodeIsValid(req.Code) {
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "incorrect code"})
+		return
+	}
+
+	if err := h.services.Auth.CheckRestoreCode(c.Request.Context(), req); err != nil {
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, responses.InfoResponse{Message: "Access granted"})
 }
