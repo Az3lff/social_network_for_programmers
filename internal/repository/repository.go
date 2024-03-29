@@ -3,14 +3,15 @@ package repository
 import (
 	"context"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"social_network_for_programmers/internal/entity/auth_entity"
 	messengerModels "social_network_for_programmers/internal/entity/messenger"
-	"social_network_for_programmers/internal/entity/users"
 )
 
 type Auth interface {
-	Create(ctx context.Context, user *users.UserSignUp) error
-	GetByEmail(ctx context.Context, email string) (user *users.UserRepo, err error)
+	Create(ctx context.Context, user *auth_entity.UserSignUp) error
+	GetByEmail(ctx context.Context, email string) (user *auth_entity.UserRepo, err error)
 	FindByEmail(ctx context.Context, email string) error
+	UpdatePasswordByEmail(ctx context.Context, user *auth_entity.UserUpdatePassword) error
 }
 
 type Messenger interface {

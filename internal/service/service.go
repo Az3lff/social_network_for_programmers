@@ -5,16 +5,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"social_network_for_programmers/internal/config"
-	"social_network_for_programmers/internal/entity/users"
+	"social_network_for_programmers/internal/entity/auth_entity"
 	"social_network_for_programmers/internal/repository"
 	"social_network_for_programmers/pkg/auth"
 )
 
 type Auth interface {
-	SignUp(ctx context.Context, user *users.UserSignUp) error
-	SignIn(ctx context.Context, user *users.UserSignIn) (string, error)
+	SignUp(ctx context.Context, user *auth_entity.UserSignUp) error
+	SignIn(ctx context.Context, user *auth_entity.UserSignIn) (string, error)
 	RestoreAccount(ctx context.Context, email string, cfg *config.AuthEmail) error
-	CheckRestoreCode(ctx context.Context, req *users.RestoreAccessRequest) error
+	CheckRestoreCode(ctx context.Context, req *auth_entity.RestoreAccessRequest) error
+	UpdatePassword(ctx context.Context, user *auth_entity.UserUpdatePassword, ath *config.AuthEmail) error
 }
 
 type Messenger interface {

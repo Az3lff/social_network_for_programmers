@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"social_network_for_programmers/internal/entity/auth_entity"
 	"social_network_for_programmers/internal/entity/responses"
-	"social_network_for_programmers/internal/entity/users"
 	"social_network_for_programmers/pkg/auth/utils"
 )
 
@@ -17,13 +17,14 @@ func (h *Handler) initAuthRoutes(api *gin.RouterGroup) {
 		auth.POST("/sign-in", h.userSignIn)
 		auth.POST("/restore-access", h.userRestoreAccount)
 		auth.POST("/check-restore-code", h.checkRestoreCode)
+		auth.POST("/update-password", h.restorePassword)
 	}
 }
 
 func (h *Handler) userSignUp(c *gin.Context) {
-	user := new(users.UserSignUp)
+	user := new(auth_entity.UserSignUp)
 	if err := c.BindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "failed to read a user data, please try again"})
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "failed to read a user data"})
 		log.Println("failed to deserialize json: ", err.Error())
 		return
 	}
@@ -45,15 +46,15 @@ func (h *Handler) userSignUp(c *gin.Context) {
 }
 
 func (h *Handler) userSignIn(c *gin.Context) {
-	user := new(users.UserSignIn)
+	user := new(auth_entity.UserSignIn)
 	if err := c.BindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "failed to read a user data, please try again"})
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "failed to read a user data"})
 		log.Println(err.Error())
 		return
 	}
 
 	if user.Email == "" || user.Password == "" {
-		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "data is invalid, please fill in all fields"})
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "data is invalid, fill in all fields"})
 		return
 	}
 
@@ -68,9 +69,9 @@ func (h *Handler) userSignIn(c *gin.Context) {
 }
 
 func (h *Handler) userRestoreAccount(c *gin.Context) {
-	user := new(users.UserRestore)
+	user := new(auth_entity.UserRestore)
 	if err := c.BindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "failed to read a user data, please try again"})
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "failed to read a user data"})
 		return
 	}
 
@@ -88,9 +89,9 @@ func (h *Handler) userRestoreAccount(c *gin.Context) {
 }
 
 func (h *Handler) checkRestoreCode(c *gin.Context) {
-	req := new(users.RestoreAccessRequest)
+	req := new(auth_entity.RestoreAccessRequest)
 	if err := c.BindJSON(req); err != nil {
-		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "failed to read a user data, please try again"})
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "failed to read a data"})
 		return
 	}
 	fmt.Println(req.Code)
@@ -106,4 +107,34 @@ func (h *Handler) checkRestoreCode(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, responses.InfoResponse{Message: "Access granted"})
+}
+
+func (h *Handler) restorePassword(c *gin.Context) {
+	req := new(auth_entity.UpdatePasswordRequest)
+	if err := c.BindJSON(req); err != nil {
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "failed to read a user data"})
+		return
+	}
+
+	if req.Password1 != req.Password2 {
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "passwords don't match"})
+		return
+	}
+
+	if !utils.PasswordIsValid(req.Password1) {
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: "incorrect password"})
+		return
+	}
+
+	user := &auth_entity.UserUpdatePassword{
+		Email:        req.Email,
+		HashPassword: req.Password1,
+	}
+
+	if err := h.services.Auth.UpdatePassword(c.Request.Context(), user, &h.cfg.AuthEmail); err != nil {
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	c.Status(http.StatusOK)
 }

@@ -3,13 +3,13 @@ package utils
 import (
 	"errors"
 	"net/mail"
-	"social_network_for_programmers/internal/entity/users"
+	"social_network_for_programmers/internal/entity/auth_entity"
 	"strconv"
 	"strings"
 	"unicode"
 )
 
-func ValidationUserSignUp(user *users.UserSignUp) error {
+func ValidationUserSignUp(user *auth_entity.UserSignUp) error {
 	var errStr []string
 	if !LoginIsValid(user.Login) {
 		errStr = append(errStr, "login="+user.Login)

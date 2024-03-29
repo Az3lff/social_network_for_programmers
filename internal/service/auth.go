@@ -6,8 +6,8 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/redis/go-redis/v9"
 	"social_network_for_programmers/internal/config"
+	"social_network_for_programmers/internal/entity/auth_entity"
 	"social_network_for_programmers/internal/entity/emails"
-	"social_network_for_programmers/internal/entity/users"
 	"social_network_for_programmers/internal/repository"
 	"social_network_for_programmers/pkg/auth"
 	"social_network_for_programmers/pkg/auth/utils"
@@ -24,8 +24,8 @@ func NewAuthService(repo repository.Auth, tokenManager auth.TokenManager, cache 
 	return &AuthService{repo, tokenManager, cache}
 }
 
-func (a *AuthService) SignUp(ctx context.Context, user *users.UserSignUp) error {
-	hashPassword, err := utils.CreateHashPassword(user.Password)
+func (a *AuthService) SignUp(ctx context.Context, user *auth_entity.UserSignUp) error {
+	hashPassword, err := utils.GenerateHashPassword(user.Password)
 	if err != nil {
 		return err
 	}
@@ -38,7 +38,7 @@ func (a *AuthService) SignUp(ctx context.Context, user *users.UserSignUp) error 
 	return nil
 }
 
-func (a *AuthService) SignIn(ctx context.Context, user *users.UserSignIn) (string, error) {
+func (a *AuthService) SignIn(ctx context.Context, user *auth_entity.UserSignIn) (string, error) {
 	userRepo, err := a.repo.GetByEmail(ctx, user.Email)
 	if err != nil && err.Error() != pgx.ErrNoRows.Error() {
 		return "", err
@@ -70,21 +70,21 @@ func (a *AuthService) RestoreAccount(ctx context.Context, email string, ath *con
 
 	content := "Subject:Restore account code\n" + code
 
-	s := emails.MessageEmail{
+	s := &emails.MessageEmail{
 		Ath:     ath,
 		From:    ath.Username,
 		To:      []string{email},
 		Content: []byte(content),
 	}
 
-	if err := utils.SendMessageEmail(&s); err != nil {
+	if err := utils.SendMessageEmail(s); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (a *AuthService) CheckRestoreCode(ctx context.Context, req *users.RestoreAccessRequest) error {
+func (a *AuthService) CheckRestoreCode(ctx context.Context, req *auth_entity.RestoreAccessRequest) error {
 	codeInCache, err := a.cache.Get(ctx, req.Email).Result()
 	if err != nil {
 		return err
@@ -95,6 +95,33 @@ func (a *AuthService) CheckRestoreCode(ctx context.Context, req *users.RestoreAc
 	}
 
 	a.cache.Del(ctx, req.Email)
+
+	return nil
+}
+
+func (a *AuthService) UpdatePassword(ctx context.Context, user *auth_entity.UserUpdatePassword, ath *config.AuthEmail) error {
+	hashPassword, err := utils.GenerateHashPassword(user.HashPassword)
+	if err != nil {
+		return err
+	}
+	user.HashPassword = hashPassword
+
+	if err := a.repo.UpdatePasswordByEmail(ctx, user); err != nil {
+		return err
+	}
+
+	content := "Subject:Restore account\n" + "The password has been changed"
+
+	s := &emails.MessageEmail{
+		Ath:     ath,
+		From:    ath.Username,
+		To:      []string{user.Email},
+		Content: []byte(content),
+	}
+
+	if err := utils.SendMessageEmail(s); err != nil {
+		return err
+	}
 
 	return nil
 }
